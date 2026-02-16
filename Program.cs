@@ -1,175 +1,162 @@
 ﻿using System;
-using System.IO;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
-using System.Threading;
 
-namespace Roman
+namespace NextStadi
 {
     internal class Program
     {
         static void Main(string[] args)
         {
-            ConsoleKeyInfo pressedKey = new ConsoleKeyInfo('w', ConsoleKey.W, false, false, false);
-            ConsoleColor defaultColor = Console.ForegroundColor;
-            char[,] map = ReadMap("map.txt");
-
-            Task.Run(() =>
-            {
-                while (true)
-                {
-                    pressedKey = Console.ReadKey();
-                }
-            });
-
-
+            Console.CursorVisible = false;
+            bool isOpen = true;
+            bool isPlauerInMap = false;
+            int TresherInMap = 0;
+            int userBalanse = 0;
             Random rand = new Random();
-            bool isGame = true;
-            int xPosition = 1, yPosition = 1, xEnemyPosition = 0, yEnemiyPosition = 0;
-            int score = 0;
 
-            while (true)
+            char[,] map = {
+                {'#', '#','#', '#', '#', '#','#', '#','#', '#','#', '#','#', '#','#', '#','#', '#','#', '#','#', '#','#', '#','#', '#','#', '#','#', '#','#'},
+                {'#', ' ',' ', '#', ' ', ' ',' ', ' ',' ', ' ',' ', ' ',' ', ' ',' ', ' ',' ', ' ',' ', ' ',' ', ' ',' ', ' ',' ', ' ',' ', ' ',' ', ' ','#'},
+                {'#', ' ',' ', '#', ' ', ' ',' ', ' ',' ', ' ',' ', ' ',' ', '#',' ', ' ',' ', ' ',' ', ' ',' ', ' ',' ', ' ',' ', ' ',' ', ' ',' ', ' ','#'},
+                {'#', ' ',' ', '#', ' ', ' ',' ', ' ',' ', ' ',' ', ' ',' ', '#',' ', ' ',' ', ' ',' ', ' ',' ', ' ',' ', ' ',' ', ' ',' ', ' ',' ', ' ','#'},
+                {'#', ' ',' ', ' ', ' ', ' ',' ', ' ',' ', ' ',' ', ' ',' ', '#',' ', ' ',' ', ' ',' ', ' ',' ', ' ',' ', ' ',' ', ' ',' ', ' ',' ', ' ','#'},
+                {'#', ' ',' ', '#', ' ', ' ',' ', ' ',' ', ' ',' ', ' ',' ', '#',' ', ' ',' ', ' ','#', '#','#', '#',' ', ' ',' ', ' ',' ', ' ',' ', ' ','#'},
+                {'#', ' ',' ', '#', ' ', ' ',' ', ' ',' ', ' ',' ', ' ',' ', '#',' ', ' ',' ', ' ','#', ' ',' ', '#',' ', ' ',' ', ' ',' ', ' ',' ', ' ','#'},
+                {'#', ' ',' ', '#', '#', '#','#', '#',' ', ' ',' ', ' ',' ', '#',' ', ' ',' ', ' ','#', ' ',' ', '#',' ', ' ',' ', ' ',' ', ' ',' ', ' ','#'},
+                {'#', ' ',' ', ' ', ' ', ' ',' ', '#',' ', ' ',' ', ' ',' ', ' ',' ', ' ',' ', ' ','#', ' ',' ', '#',' ', ' ',' ', ' ',' ', ' ',' ', ' ','#'},
+                {'#', ' ',' ', ' ', ' ', ' ',' ', '#',' ', ' ',' ', ' ',' ', ' ',' ', ' ',' ', ' ',' ', ' ',' ', '#',' ', ' ',' ', ' ',' ', ' ',' ', ' ','#'},
+                {'#', ' ',' ', ' ', ' ', ' ',' ', '#',' ', ' ',' ', ' ',' ', ' ',' ', ' ',' ', ' ',' ', ' ',' ', ' ',' ', ' ',' ', ' ',' ', ' ',' ', ' ','#'},
+                {'#', '#','#', '#', '#', '#','#', '#','#', '#','#', '#','#', '#','#', '#','#', '#','#', '#','#', '#','#', '#','#', '#','#', '#','#', '#','#'},
+            };
+
+            int xPlauerPosition = 0;
+            int yPlauerPosition = 0;
+
+            while (!isPlauerInMap)
             {
-                xEnemyPosition = rand.Next(0, map.GetLength(0) - 1);
-                yEnemiyPosition = rand.Next(0, map.GetLength(1) - 1);
-                if (map[xEnemyPosition, yEnemiyPosition] == ' ')
+                xPlauerPosition = rand.Next(1, map.GetLength(0) - 1);
+                yPlauerPosition = rand.Next(1, map.GetLength(1) - 1);
+
+                if (map[xPlauerPosition, yPlauerPosition] != '#')
                 {
-                    break;
-                }
-            }
-
-
-            while (isGame)
-            {
-
-                Console.Clear();
-                Console.CursorVisible = false;
-
-                Console.ForegroundColor = ConsoleColor.Blue;
-                DrawMap(map);
-
-                Console.SetCursorPosition(xEnemyPosition, yEnemiyPosition);
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.Write('&');
-
-                Console.SetCursorPosition(xPosition, yPosition);
-                Console.ForegroundColor = ConsoleColor.Yellow;
-                Console.Write('@');
-
-                Console.SetCursorPosition(58, 0);
-                Console.Write($"Score: {score}.");
-
-                Console.ForegroundColor = defaultColor;
-                Console.SetCursorPosition(0, 10);
-                Console.WriteLine("Здравствуйте, мы приветствуем вас на игре Пакман, вы можете перемещаться по карте с помощью стрелочек.");
-
-                Thread.Sleep(1000);
-
-
-
-
-
-
-                HandleInput(pressedKey, ref xPosition, ref yPosition, map, ref score);
-            }
-        }
-
-        private static void HandleInput(ConsoleKeyInfo pressedKey, ref int xPosition, ref int yPosition, char[,] map, ref int score)
-        {
-            int[] direction = GetDirection(pressedKey);
-
-            int nextPacmanPositionX = xPosition + direction[0];
-            int nextPacmanPositionY = yPosition + direction[1];
-
-            char nextCell = map[nextPacmanPositionX, nextPacmanPositionY];
-
-            if (nextCell == ' ' || nextCell == '.')
-            {
-                xPosition = nextPacmanPositionX;
-                yPosition = nextPacmanPositionY;
-
-                if (nextCell == '.') 
-                {
-                    score += 1;
-                    map[nextPacmanPositionX, nextPacmanPositionY] = ' ';
+                    map[xPlauerPosition, yPlauerPosition] = '&';
+                    isPlauerInMap = true;
                 }
 
             }
-        }
 
-        private static int[] GetDirection(ConsoleKeyInfo pressedKey)
-        {
-            int[] direction = { 0, 0 };
-
-            switch (pressedKey.Key)
+            while (isOpen)
             {
-                case ConsoleKey.UpArrow:
-                    direction[1] = -1;
-                    break;
-                case ConsoleKey.DownArrow:
-                    direction[1] = 1;
-                    break;
-                case ConsoleKey.LeftArrow:
-                    direction[0] = -1;
-                    break;
-                case ConsoleKey.RightArrow:
-                    direction[0] = 1;
-                    break;
-                default:
-                    Console.WriteLine("Введено неверное значение.");
-                    //Console.ReadKey();
-                    break;
 
-            }
+                while (TresherInMap < 3)
+                {
+                    int xTresherPosition = rand.Next(1, map.GetLength(0) - 1);
+                    int yTresherPosition = rand.Next(1, map.GetLength(1) - 1);
 
-            return direction;
-        }
+                    if (map[xTresherPosition, yTresherPosition] == ' ')
+                    {
+                        map[xTresherPosition, yTresherPosition] = '$';
+                        TresherInMap++;
+                    }
+                    ;
+                }
 
-        private static void DrawMap(char[,] map)
-        {
-            for (int j = 0; j < map.GetLength(1); j++)
-            {
                 for (int i = 0; i < map.GetLength(0); i++)
                 {
-                    Console.Write(map[i, j]);
-
+                    for (int j = 0; j < map.GetLength(1); j++)
+                    {
+                        Console.Write(map[i, j]);
+                    }
+                    Console.WriteLine();
                 }
-                Console.WriteLine();
-            }
-        }
 
-        private static char[,] ReadMap(string path)
-        {
-            string[] file = File.ReadAllLines(path);
+                Console.SetCursorPosition(0, 13);
+                Console.Write("Здравствуйте мы приветствуем вас в нашей игре! \n" +
+                    "Вы можете перемещаться по карте с помощью клавиш движения. \n" +
+                    "Собирайте драгоценности, у вас на счету " + userBalanse + " сокровищ!\n" +
+                    "Чтобы выйти из игры нажмите E - Esc. \n" +
+                    "Чтобы двигаться нажимайте клавиши W - вверх, S - вниз, D - в право, A - в лево.\n" +
+                    "Куда отправимся? ");
 
-            char[,] map = new char[GetMaxLengthOfLine(file), file.Length];
 
-            for (int i = 0; i < map.GetLength(0); i++)
-            {
-                for (int j = 0; j < map.GetLength(1); j++)
+
+                string plauerInput = Console.ReadLine().ToUpper();
+                switch (plauerInput)
                 {
-                    map[i, j] = file[j][i];
+                    case "W":
+                    case "S":
+                    case "A":
+                    case "D":
+                        int newYPlauerPosition = 0;
+                        int newXPlauerPosition = 0;
+
+                        if (plauerInput == "W")
+                        {
+                            newXPlauerPosition = xPlauerPosition - 1;
+                            newYPlauerPosition = yPlauerPosition;
+                        }
+                        else if (plauerInput == "S")
+                        {
+                            newXPlauerPosition = xPlauerPosition + 1;
+                            newYPlauerPosition = yPlauerPosition;
+                        }
+                        else if (plauerInput == "A")
+                        {
+                            newXPlauerPosition = xPlauerPosition;
+                            newYPlauerPosition = yPlauerPosition - 1;
+                        }
+                        else
+                        {
+                            newXPlauerPosition = xPlauerPosition;
+                            newYPlauerPosition = yPlauerPosition + 1;
+                        }
+
+                        if (map[newXPlauerPosition, newYPlauerPosition] != '#')
+                        {
+                            if (map[newXPlauerPosition, newYPlauerPosition] == '$')
+                            {
+                                userBalanse++;
+                                TresherInMap--;
+                            }
+
+                            map[xPlauerPosition, yPlauerPosition] = ' ';
+                            map[newXPlauerPosition, newYPlauerPosition] = '&';
+
+                            xPlauerPosition = newXPlauerPosition;
+                            yPlauerPosition = newYPlauerPosition;
+                        }
+                        else
+                        {
+                            Console.WriteLine("К сожалению вы уткнулись в стену");
+                            Console.ReadKey();
+                        }
+
+                        break;
+                    case "E":
+                        Console.WriteLine("Выходим из игры. \n" +
+                            "Вы закончили с " + userBalanse + " сокровищ, возвращайтесь еще!");
+                        Console.ReadKey();
+
+                        isOpen = false;
+                        break;
+                    default:
+                        Console.WriteLine("Неверный ввод!");
+                        Console.ReadKey();
+                        break;
+
+
+
+
 
                 }
+                //Console.ReadKey();
+                Console.Clear();
+                Console.SetCursorPosition(0, 0);
             }
-
-            return map;
-        }
-
-        private static int GetMaxLengthOfLine(string[] lines)
-        {
-            int maxLength = lines[0].Length;
-
-            foreach (string line in lines)
-            {
-                if (line.Length > maxLength)
-                {
-                    maxLength = line.Length;
-                }
-            }
-            return maxLength;
 
         }
     }
